@@ -15,8 +15,12 @@ const endTime = ref(0)
 const vUpdate: Directive = {
   updated(el: HTMLElement) {
     if(el.clientWidth>800){
-      inputWidth.value.width = el.clientWidth + 'px'
+      contentStyle.value.width = el.clientWidth + 'px'
     }
+    if(el.clientHeight>64){
+      contentStyle.value.height = el.clientHeight + 'px'
+    }
+
   }
 }
 
@@ -25,7 +29,7 @@ const currentSentence = computed(() => {
   return sentences.value[currentSentenceIndex.value] as string
 })
 
-const inputWidth = ref({ width: '800px' })
+const contentStyle = ref({ width: '800px', height:'64px' })
 
 function startNewSentence() {
   if (currentSentenceIndex.value < sentences.value.length - 1) {
@@ -64,7 +68,7 @@ function readJson(event: Event) {
 <template>
   <div class="bg-gray-900 text-white min-h-screen">
     <div class="container mx-auto min-h-screen flex flex-col items-center">
-      <div v-update class="text-2xl mb-8 mt-20 px-4 box-content whitespace-pre">
+      <div v-update class="text-2xl mb-8 mt-20 p-4 box-content whitespace-pre">
         <span
           v-for="(char, index) in sentences.split('')"
           :key="index"
@@ -77,15 +81,15 @@ function readJson(event: Event) {
         </span>
       </div>
 
-      <input
+      <textarea
         v-model="inputText"
-        :style="inputWidth"
+        :style="contentStyle"
         autofocus
-        class="bg-gray-800 text-white text-2xl p-4 rounded"
+        class="bg-gray-800 text-white text-2xl p-4 rounded overflow-clip"
         type="text"
         @input="checkInput"
       />
-      <div class="flex justify-between mt-4 text-lg opacity-70" :style="inputWidth">
+      <div class="flex justify-between mt-4 text-lg opacity-70" :style="{width:contentStyle.width}">
         <div>Typing Speed: {{ speed }} WPM</div>
         <div>Accuracy: {{ accuracy }}%</div>
         <label class="cursor-pointer">
