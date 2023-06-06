@@ -2,13 +2,14 @@
 import type { Directive, Events } from 'vue'
 import { ref, watch } from 'vue'
 
-const sentences = ref<string>('hello world')
+const sentences = ref<string>('await break case catch class const continue debugger default delete do else true\n' +
+    'export false for if function let new null import return switch throw this try while')
 const config = {
   autoReset: true
 }
 
 const speed = ref(0)
-const errorCount = ref(100)
+const errorCount = ref(0)
 
 const inputText = ref('')
 const startTime = ref(0)
@@ -141,10 +142,11 @@ function retryErrorWords() {
       >
         <div style="min-width: 190px">Typing Speed: {{ speed }} WPM</div>
         <div>Error Count: {{ errorCount }}</div>
-        <div class="cursor-pointer" @click="reset">Reset</div>
-        <div class="cursor-pointer" @click="retryErrorWords">Retry Error Words</div>
-        <label class="cursor-pointer">
-          load data
+        <div class="cursor-pointer hover:text-sky-500" @click="reset">Reset</div>
+        <div class="cursor-pointer hover:text-sky-500" @click="retryErrorWords">Retry Error Words</div>
+        <a href="./demo-data.txt" class="hover:text-sky-500"  download>Demo Data</a>
+        <label class="cursor-pointer hover:text-sky-500" >
+          Import data
           <input class="opacity-0 w-0 h-0" type="file" @change="readJson" accept="text/plain" />
         </label>
       </div>
