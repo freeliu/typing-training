@@ -1,16 +1,17 @@
 <script lang="ts" setup>
-import { computed, nextTick, ref, watch } from 'vue'
-import type { Directive } from 'vue'
-import { chunkArray } from '../assets/util.js'
+import type {Directive} from 'vue'
+import {ref, watch} from 'vue'
 
 const sentences = ref<string>('hello world')
 
 const speed = ref(0)
-const accuracy = ref(100)
+const errorCount = ref(100)
 
 const inputText = ref('')
 const startTime = ref(0)
 const endTime = ref(0)
+
+const textAreaElement=ref()
 
 const vUpdate: Directive = {
   updated(el: HTMLElement) {
@@ -24,31 +25,28 @@ const vUpdate: Directive = {
   }
 }
 
-const currentSentenceIndex = ref(0)
-const currentSentence = computed(() => {
-  return sentences.value[currentSentenceIndex.value] as string
-})
+
 
 const contentStyle = ref({ width: '800px', height:'64px' })
 
-function startNewSentence() {
-  if (currentSentenceIndex.value < sentences.value.length - 1) {
-    currentSentenceIndex.value++
-    inputText.value = ''
+watch(inputText,(value, oldValue)=>{
+  if(value&&oldValue==='')
+  {
+    startTime.value= new Date().getTime()
   }
-}
+})
 
 function checkInput() {
-  if (inputText.value === currentSentence.value) {
     endTime.value = new Date().getTime()
     const timeDiff = (endTime.value - startTime.value) / 1000
-    const wordCount = currentSentence.value.split(' ').length
+    const wordCount = sentences.value.split(' ').length
     speed.value = Math.round((wordCount / timeDiff) * 60)
-    accuracy.value =
-      Math.round((currentSentence.value.length / inputText.value.length) * 100) || 100
-    startNewSentence()
-  } else if (inputText.value.length === 1) {
-    startTime.value = new Date().getTime()
+
+  for (let index = 0; index < sentences.value.length; index++) {
+    let char=sentences.value[index]
+    if(inputText.value[index] !== char && index < inputText.value.length){
+      errorCount.value++
+    }
   }
 }
 
@@ -60,8 +58,15 @@ function readJson(event: Event) {
   function onloadData(event: Event) {
     //@ts-ignore
     sentences.value = event.target?.result
-    inputText.value=''
+    reset()
   }
+}
+
+function reset(){
+  inputText.value=''
+  errorCount.value=0
+  speed.value=0
+  textAreaElement.value.focus()
 }
 </script>
 
@@ -84,6 +89,7 @@ function readJson(event: Event) {
       <textarea
         v-model="inputText"
         :style="contentStyle"
+        ref="textAreaElement"
         autofocus
         class="bg-gray-800 text-white text-2xl p-4 rounded overflow-clip"
         type="text"
@@ -91,7 +97,8 @@ function readJson(event: Event) {
       />
       <div class="flex justify-between mt-4 text-lg opacity-70" :style="{width:contentStyle.width}">
         <div>Typing Speed: {{ speed }} WPM</div>
-        <div>Accuracy: {{ accuracy }}%</div>
+        <div>Error Count: {{ errorCount }}</div>
+        <div class="cursor-pointer" @click="reset">Reset</div>
         <label class="cursor-pointer">
           load data
           <input class="opacity-0 w-0 h-0" type="file" @change="readJson" accept="text/plain" />
