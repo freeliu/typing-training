@@ -4,10 +4,11 @@ import vue from '@vitejs/plugin-vue'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
+  base: './',
   css:{
     devSourcemap:true
   },
   build:{
-    outDir:'./docs/'
+    outDir:'./docs/',
   }
 })
