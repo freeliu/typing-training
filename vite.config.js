@@ -8,7 +8,7 @@ export default defineConfig({
   css:{
     devSourcemap:true
   },
-  build:{
+/*  build:{
     outDir:'./docs/',
-  }
+  }*/
 })
