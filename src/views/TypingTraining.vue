@@ -83,7 +83,7 @@ function reset() {
 const vUpdateErrorWord: Directive = {
   updated(el: HTMLElement) {
     if (el.querySelector('.incorrect')) {
-      errorSet.add(el.dataset.word as string)
+      errorSet.add(el.dataset?.word?.trim() as string)
     }
   }
 }
