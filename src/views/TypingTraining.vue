@@ -142,7 +142,7 @@ function retryErrorWords() {
       >
         <div style="min-width: 190px">Typing Speed: {{ speed }} WPM</div>
         <div>Error Count: {{ errorCount }}</div>
-        <div class="cursor-pointer hover:text-sky-500" @click="reset">Reset</div>
+        <div class="cursor-pointer hover:text-sky-500" @click="reset">Retry</div>
         <div class="cursor-pointer hover:text-sky-500" @click="retryErrorWords">Retry Error Words</div>
         <a href="./demo-data.txt" class="hover:text-sky-500"  download>Demo Data</a>
         <label class="cursor-pointer hover:text-sky-500" >
