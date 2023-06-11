@@ -102,6 +102,10 @@ function retryErrorWords() {
 <template>
   <div class="bg-gray-900 text-white min-h-screen">
     <div class="container mx-auto min-h-screen flex flex-col items-center">
+      <div class="flex justify-end items-center w-full h-10 text-lg">
+        <router-link class="link " to="/add">add</router-link>
+        <router-link  class="ml-4 link" to="/list">list</router-link>
+      </div>
       <div v-update class="text-2xl mb-8 mt-20 p-4 box-content whitespace-pre">
         <span
           v-for="(word, wordIndex) in sentences.split(' ')"
@@ -142,10 +146,10 @@ function retryErrorWords() {
       >
         <div style="min-width: 190px">Typing Speed: {{ speed }} WPM</div>
         <div>Error Count: {{ errorCount }}</div>
-        <div class="cursor-pointer hover:text-sky-500" @click="reset">Retry</div>
-        <div class="cursor-pointer hover:text-sky-500" @click="retryErrorWords">Retry Error Words</div>
-        <a href="./demo-data.txt" class="hover:text-sky-500"  download>Demo Data</a>
-        <label class="cursor-pointer hover:text-sky-500" >
+        <div class="link" @click="reset">Retry</div>
+        <div class="link" @click="retryErrorWords">Retry Error Words</div>
+        <a href="./demo-data.txt" class="link"  download>Demo Data</a>
+        <label class="link" >
           Import data
           <input class="opacity-0 w-0 h-0" type="file" @change="readJson" accept="text/plain" />
         </label>
@@ -155,6 +159,11 @@ function retryErrorWords() {
 </template>
 
 <style scoped>
+.link{
+  @apply cursor-pointer hover:text-sky-500
+}
+
+
 .correct {
   color: #10b981;
 }
