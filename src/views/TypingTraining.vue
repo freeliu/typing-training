@@ -137,7 +137,7 @@ function retryErrorWords() {
         @input="checkInput"
       />
       <div
-        class="flex justify-between mt-4 text-lg opacity-70 infos"
+        class="flex justify-between  text-lg opacity-70 infos mt-auto mb-5"
         :style="{ width: contentStyle.width }"
       >
         <div style="min-width: 190px">Typing Speed: {{ speed }} WPM</div>
