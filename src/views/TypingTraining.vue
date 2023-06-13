@@ -83,7 +83,7 @@ function reset() {
 const vUpdateErrorWord: Directive = {
   updated(el: HTMLElement) {
     if (el.querySelector('.incorrect')) {
-      errorSet.add(el.dataset?.word?.trim() as string)
+      errorSet.add(el.dataset?.word?.trim().replace(/\n/,'') as string)
     }
   }
 }
@@ -106,17 +106,18 @@ function retryErrorWords() {
         <router-link class="link " to="/add">add</router-link>
         <router-link  class="ml-4 link" to="/list">list</router-link>
       </div>
-      <div v-update class="text-2xl mb-8 mt-20 p-4 box-content whitespace-pre">
+      <div class="flex mt-20">
+        <div v-update class="text-2xl mb-8  p-4 box-content whitespace-pre">
         <span
-          v-for="(word, wordIndex) in sentences.split(' ')"
-          :key="word + wordIndex"
-          v-update-error-word
-          :data-word="word"
+            v-for="(word, wordIndex) in sentences.split(' ')"
+            :key="word + wordIndex"
+            v-update-error-word
+            :data-word="word"
         >
           <span
-            v-for="(char, index) in word.split('')"
-            :key="index"
-            :class="{
+              v-for="(char, index) in word.split('')"
+              :key="index"
+              :class="{
               correct:
                 inputText.split(' ')[wordIndex] && inputText.split(' ')[wordIndex][index] === char,
               incorrect:
@@ -129,17 +130,19 @@ function retryErrorWords() {
           </span>
           <span>&nbsp;</span>
         </span>
+        </div>
+
+        <textarea
+            v-model="inputText"
+            :style="contentStyle"
+            ref="textAreaElement"
+            autofocus
+            class="bg-gray-800 text-white text-2xl p-4 rounded overflow-clip"
+            type="text"
+            @input="checkInput"
+        />
       </div>
 
-      <textarea
-        v-model="inputText"
-        :style="contentStyle"
-        ref="textAreaElement"
-        autofocus
-        class="bg-gray-800 text-white text-2xl p-4 rounded overflow-clip"
-        type="text"
-        @input="checkInput"
-      />
       <div
         class="flex justify-between  text-lg opacity-70 infos mt-auto mb-5"
         :style="{ width: contentStyle.width }"
