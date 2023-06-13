@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 import type { Directive, Events } from 'vue'
-import { ref, watch } from 'vue'
+import {nextTick, ref, watch} from 'vue'
 
-const sentences = ref<string>('await break case catch class const continue debugger default delete do else true\n' +
-    'export false for if function let new null import return switch throw this try while')
+const sentences = ref<string>('')
+nextTick(()=>{
+  sentences.value=`await break case catch class const continue debugger default delete do else true export false for if function let new null import return switch throw this try while`
+})
 const config = {
   autoReset: true
 }
@@ -22,6 +24,7 @@ const vUpdate: Directive = {
     let { clientWidth, clientHeight } = el
     if (clientWidth > 200) {
       clientWidth = Math.max(clientWidth, 400)
+      clientWidth = Math.min(clientWidth, 1000)
       contentStyle.value.width = clientWidth + 2 + 'px'
     }
     if (clientHeight > 64) {
@@ -66,7 +69,7 @@ function readJson(event: Event) {
   event.target.value = ''
   function onloadData(event: Event) {
     //@ts-ignore
-    sentences.value = event.target?.result
+    sentences.value = event.target?.result.replace(/\s\s+/g, ' ');
     reset()
   }
 }
@@ -83,7 +86,7 @@ function reset() {
 const vUpdateErrorWord: Directive = {
   updated(el: HTMLElement) {
     if (el.querySelector('.incorrect')) {
-      errorSet.add(el.dataset?.word?.trim().replace(/\n/,'') as string)
+      errorSet.add(el.dataset?.word?.trim().replace(/\n/, '') as string)
     }
   }
 }
@@ -103,21 +106,20 @@ function retryErrorWords() {
   <div class="bg-gray-900 text-white min-h-screen">
     <div class="container mx-auto min-h-screen flex flex-col items-center">
       <div class="flex justify-end items-center w-full h-10 text-lg">
-        <router-link class="link " to="/add">add</router-link>
-        <router-link  class="ml-4 link" to="/list">list</router-link>
+        <router-link class="link" to="/add">add</router-link>
+        <router-link class="ml-4 link" to="/list">list</router-link>
       </div>
-      <div class="flex mt-20">
-        <div v-update class="text-2xl mb-8  p-4 box-content whitespace-pre">
+      <div v-update class="text-2xl mb-8 mt-20 p-4 box-content flex flex-wrap max-w-[800px]">
         <span
-            v-for="(word, wordIndex) in sentences.split(' ')"
-            :key="word + wordIndex"
-            v-update-error-word
-            :data-word="word"
+          v-for="(word, wordIndex) in sentences.split(' ')"
+          :key="word + wordIndex"
+          v-update-error-word
+          :data-word="word"
         >
           <span
-              v-for="(char, index) in word.split('')"
-              :key="index"
-              :class="{
+            v-for="(char, index) in word.split('')"
+            :key="index"
+            :class="{
               correct:
                 inputText.split(' ')[wordIndex] && inputText.split(' ')[wordIndex][index] === char,
               incorrect:
@@ -130,29 +132,28 @@ function retryErrorWords() {
           </span>
           <span>&nbsp;</span>
         </span>
-        </div>
-
-        <textarea
-            v-model="inputText"
-            :style="contentStyle"
-            ref="textAreaElement"
-            autofocus
-            class="bg-gray-800 text-white text-2xl p-4 rounded overflow-clip"
-            type="text"
-            @input="checkInput"
-        />
       </div>
 
+      <textarea
+        v-model="inputText"
+        :style="contentStyle"
+        ref="textAreaElement"
+        autofocus
+        class="bg-gray-800 text-white text-2xl p-4 rounded overflow-clip outline-0"
+        type="text"
+        @input="checkInput"
+      />
+
       <div
-        class="flex justify-between  text-lg opacity-70 infos mt-auto mb-5"
+        class="flex justify-between text-lg opacity-70 infos mt-auto mb-5"
         :style="{ width: contentStyle.width }"
       >
         <div style="min-width: 190px">Typing Speed: {{ speed }} WPM</div>
         <div>Error Count: {{ errorCount }}</div>
         <div class="link" @click="reset">Retry</div>
         <div class="link" @click="retryErrorWords">Retry Error Words</div>
-        <a href="./demo-data.txt" class="link"  download>Demo Data</a>
-        <label class="link" >
+        <a href="./demo-data.txt" class="link" download>Demo Data</a>
+        <label class="link">
           Import data
           <input class="opacity-0 w-0 h-0" type="file" @change="readJson" accept="text/plain" />
         </label>
@@ -162,10 +163,9 @@ function retryErrorWords() {
 </template>
 
 <style scoped>
-.link{
-  @apply cursor-pointer hover:text-sky-500
+.link {
+  @apply cursor-pointer hover:text-sky-500;
 }
-
 
 .correct {
   color: #10b981;
