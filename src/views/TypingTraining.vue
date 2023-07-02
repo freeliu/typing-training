@@ -15,7 +15,7 @@ const speed = ref(0)
 const errorCount = ref(0)
 
 const inputText = ref('')
-const isStarted=ref(false)
+const isStarted = ref(false)
 const startTime = ref(0)
 const endTime = ref(0)
 
@@ -46,7 +46,7 @@ watch(isStarted, (value, oldValue) => {
 function checkInput(event: InputEvent) {
   endTime.value = new Date().getTime()
   // replace multiple spaces with single space
-  inputText.value=inputText.value.replace(/\s\s+/g, ' ')
+  inputText.value = inputText.value.replace(/\s\s+/g, ' ')
 
   // calculate speed
   const timeDiff = (endTime.value - startTime.value) / 1000
@@ -58,6 +58,7 @@ function checkInput(event: InputEvent) {
     let char = sentences.value[index]
     if (inputText.value[index] !== char && index < inputText.value.length) {
       errorCount.value++
+      break
     }
   }
 
@@ -90,7 +91,7 @@ function reset() {
   speed.value = 0
   textAreaElement.value.focus()
   errorSet = new Set<string>()
-  isStarted.value=false
+  isStarted.value = false
 }
 
 const vUpdateErrorWord: Directive = {
@@ -112,7 +113,7 @@ function retryErrorWords() {
 }
 
 function randomOrder() {
-  let array=sentences.value.split(' ')
+  let array = sentences.value.split(' ')
   let currentIndex = array.length
   let randomIndex
   while (currentIndex != 0) {
@@ -123,7 +124,6 @@ function randomOrder() {
   sentences.value = array.join(' ')
   reset()
 }
-
 </script>
 
 <template>
@@ -133,7 +133,10 @@ function randomOrder() {
         <router-link class="link" to="/add">add</router-link>
         <router-link class="ml-4 link" to="/list">list</router-link>
       </div>
-      <div v-update class="text-2xl mb-8 mt-20 p-4 box-content flex flex-wrap max-w-[920px]">
+      <div class="flex justify-center text-lg opacity-50 mt-20 mb-2.5"  :style="{ width: contentStyle.width }">
+        <div style="min-width: 190px">Speed: {{ speed }} WPM</div>
+      </div>
+      <div v-update class="text-2xl mb-8  p-4 box-content flex flex-wrap max-w-[920px]">
         <span
           v-for="(word, wordIndex) in sentences.split(' ')"
           :key="word + wordIndex"
@@ -157,10 +160,9 @@ function randomOrder() {
           <span>&nbsp;</span>
         </span>
       </div>
-
       <textarea
         v-model="inputText"
-        @keydown='isStarted=true'
+        @keydown="isStarted = true"
         :style="contentStyle"
         ref="textAreaElement"
         autofocus
@@ -169,12 +171,13 @@ function randomOrder() {
         @input="checkInput"
       />
 
+
       <div
         class="flex justify-between text-lg opacity-70 infos mt-auto mb-5"
         :style="{ width: contentStyle.width }"
       >
-        <div style="min-width: 190px">Speed: {{ speed }} WPM</div>
         <div>Error: {{ errorCount }}</div>
+
         <div class="link" @click="reset">Retry</div>
         <div class="link" @click="retryErrorWords">Retry Error</div>
         <div class="link" @click="randomOrder">Random Order</div>
