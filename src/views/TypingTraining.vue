@@ -15,6 +15,7 @@ const speed = ref(0)
 const errorCount = ref(0)
 
 const inputText = ref('')
+const isStarted=ref(false)
 const startTime = ref(0)
 const endTime = ref(0)
 
@@ -36,24 +37,31 @@ const vUpdate: Directive = {
 
 const contentStyle = ref({ width: '800px', height: '64px' })
 
-watch(inputText, (value, oldValue) => {
-  if (value && oldValue === '') {
+watch(isStarted, (value, oldValue) => {
+  if (value && !oldValue) {
     startTime.value = new Date().getTime()
   }
 })
 
 function checkInput(event: InputEvent) {
   endTime.value = new Date().getTime()
-  const timeDiff = (endTime.value - startTime.value) / 1000
-  const wordCount = sentences.value.split(' ').length
-  speed.value = Math.round((wordCount / timeDiff) * 60)
+  // replace multiple spaces with single space
+  inputText.value=inputText.value.replace(/\s\s+/g, ' ')
 
+  // calculate speed
+  const timeDiff = (endTime.value - startTime.value) / 1000
+  const inputWordsCount = inputText.value.split(' ').length
+  speed.value = Math.round((inputWordsCount / timeDiff) * 60)
+
+  // calculate error count
   for (let index = 0; index < sentences.value.length; index++) {
     let char = sentences.value[index]
     if (inputText.value[index] !== char && index < inputText.value.length) {
       errorCount.value++
     }
   }
+
+  // auto reset
   if (config.autoReset && event.inputType === 'insertLineBreak') {
     if (inputText.value.trim() === sentences.value.trim()) {
       reset()
@@ -82,6 +90,7 @@ function reset() {
   speed.value = 0
   textAreaElement.value.focus()
   errorSet = new Set<string>()
+  isStarted.value=false
 }
 
 const vUpdateErrorWord: Directive = {
@@ -151,6 +160,7 @@ function randomOrder() {
 
       <textarea
         v-model="inputText"
+        @keydown='isStarted=true'
         :style="contentStyle"
         ref="textAreaElement"
         autofocus
