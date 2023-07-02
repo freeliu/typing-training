@@ -1,12 +1,27 @@
 <script lang="ts" setup>
 import type { Directive, Events } from 'vue'
-import { nextTick, ref, watch } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue'
+import { useListStore } from '../stores/list.js'
+import { onBeforeRouteUpdate } from 'vue-router'
+
+
+const store = useListStore()
+
 
 const sentences = ref<string>('')
-nextTick(() => {
-  sentences.value = `await break case catch class const continue debugger default delete do else true export false for if function let new null import return switch throw this try while`
-  randomOrder()
+
+
+onMounted(()=>{
+  if(store.data)
+  {
+    sentences.value=store.data
+  }else {
+    sentences.value = `await break case catch class const continue debugger default delete do else true export false for if function let new null import return switch throw this try while`
+  }
 })
+
+console.log('aa')
+
 const config = {
   autoReset: true
 }
@@ -130,8 +145,8 @@ function randomOrder() {
   <div class="bg-gray-900 text-white min-h-screen">
     <div class="container mx-auto min-h-screen flex flex-col items-center">
       <div class="flex justify-end items-center w-full h-10 text-lg">
-        <router-link class="link" to="/add">add</router-link>
-        <router-link class="ml-4 link" to="/list">list</router-link>
+        <router-link class="link" to="/set-data">set data</router-link>
+        <!--<router-link class="ml-4 link" to="/list">list</router-link>-->
       </div>
       <div class="flex justify-center text-lg opacity-50 mt-20 mb-2.5"  :style="{ width: contentStyle.width }">
         <div style="min-width: 190px">Speed: {{ speed }} WPM</div>
