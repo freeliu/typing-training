@@ -1,10 +1,11 @@
 <script lang="ts" setup>
 import type { Directive, Events } from 'vue'
-import {nextTick, ref, watch} from 'vue'
+import { nextTick, ref, watch } from 'vue'
 
 const sentences = ref<string>('')
-nextTick(()=>{
-  sentences.value=`await break case catch class const continue debugger default delete do else true export false for if function let new null import return switch throw this try while`
+nextTick(() => {
+  sentences.value = `await break case catch class const continue debugger default delete do else true export false for if function let new null import return switch throw this try while`
+  randomOrder()
 })
 const config = {
   autoReset: true
@@ -69,7 +70,7 @@ function readJson(event: Event) {
   event.target.value = ''
   function onloadData(event: Event) {
     //@ts-ignore
-    sentences.value = event.target?.result.replace(/\s\s+/g, ' ');
+    sentences.value = event.target?.result.replace(/\s\s+/g, ' ')
     reset()
   }
 }
@@ -100,6 +101,20 @@ function retryErrorWords() {
 
   reset()
 }
+
+function randomOrder() {
+  let array=sentences.value.split(' ')
+  let currentIndex = array.length
+  let randomIndex
+  while (currentIndex != 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex)
+    currentIndex--
+    ;[array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]]
+  }
+  sentences.value = array.join(' ')
+  reset()
+}
+
 </script>
 
 <template>
@@ -109,7 +124,7 @@ function retryErrorWords() {
         <router-link class="link" to="/add">add</router-link>
         <router-link class="ml-4 link" to="/list">list</router-link>
       </div>
-      <div v-update class="text-2xl mb-8 mt-20 p-4 box-content flex flex-wrap max-w-[800px]">
+      <div v-update class="text-2xl mb-8 mt-20 p-4 box-content flex flex-wrap max-w-[920px]">
         <span
           v-for="(word, wordIndex) in sentences.split(' ')"
           :key="word + wordIndex"
@@ -148,10 +163,11 @@ function retryErrorWords() {
         class="flex justify-between text-lg opacity-70 infos mt-auto mb-5"
         :style="{ width: contentStyle.width }"
       >
-        <div style="min-width: 190px">Typing Speed: {{ speed }} WPM</div>
-        <div>Error Count: {{ errorCount }}</div>
+        <div style="min-width: 190px">Speed: {{ speed }} WPM</div>
+        <div>Error: {{ errorCount }}</div>
         <div class="link" @click="reset">Retry</div>
-        <div class="link" @click="retryErrorWords">Retry Error Words</div>
+        <div class="link" @click="retryErrorWords">Retry Error</div>
+        <div class="link" @click="randomOrder">Random Order</div>
         <a href="./demo-data.txt" class="link" download>Demo Data</a>
         <label class="link">
           Import data
