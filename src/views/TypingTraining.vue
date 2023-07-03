@@ -1,26 +1,31 @@
 <script lang="ts" setup>
-import type { Directive, Events } from 'vue'
-import { nextTick, onMounted, ref, watch } from 'vue'
+import type { Directive } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useListStore } from '../stores/list.js'
-import { onBeforeRouteUpdate } from 'vue-router'
-
 
 const store = useListStore()
 
-
 const sentences = ref<string>('')
+const wordList=computed(()=>{
+  return sentences.value.split(' ').map((word) => {
+    return {
+      word,
+      key:Symbol()
+    }
+  })
+})
 
+watch(wordList,(value)=>{
+  console.log(value)
+} )
 
-onMounted(()=>{
-  if(store.data)
-  {
-    sentences.value=store.data
-  }else {
+onMounted(() => {
+  if (store.data) {
+    sentences.value = store.data
+  } else {
     sentences.value = `await break case catch class const continue debugger default delete do else true export false for if function let new null import return switch throw this try while`
   }
 })
-
-console.log('aa')
 
 const config = {
   autoReset: true
@@ -37,15 +42,27 @@ const endTime = ref(0)
 const textAreaElement = ref()
 
 const vUpdate: Directive = {
+  // todo ? 输入框？
   updated(el: HTMLElement) {
     let { clientWidth, clientHeight } = el
     if (clientWidth > 200) {
       clientWidth = Math.max(clientWidth, 400)
       clientWidth = Math.min(clientWidth, 1000)
-      contentStyle.value.width = clientWidth + 2 + 'px'
+      contentStyle.value.width = clientWidth + 'px'
     }
     if (clientHeight > 64) {
-      contentStyle.value.height = clientHeight + 2 + 'px'
+      contentStyle.value.height = clientHeight + 'px'
+    }
+  },
+  mounted(el: HTMLElement) {
+    let { clientWidth, clientHeight } = el
+    if (clientWidth > 200) {
+      clientWidth = Math.max(clientWidth, 400)
+      clientWidth = Math.min(clientWidth, 1000)
+      contentStyle.value.width = clientWidth + 'px'
+    }
+    if (clientHeight > 64) {
+      contentStyle.value.height = clientHeight + 'px'
     }
   }
 }
@@ -94,7 +111,7 @@ function readJson(event: Event) {
   event.target.value = ''
   function onloadData(event: Event) {
     //@ts-ignore
-    sentences.value = event.target?.result.replace(/\s\s+/g, ' ')
+    sentences.value = event.target?.result.replace(/\s\s+|\n|\r\n/g, ' ')
     reset()
   }
 }
@@ -148,13 +165,16 @@ function randomOrder() {
         <router-link class="link" to="/set-data">set data</router-link>
         <!--<router-link class="ml-4 link" to="/list">list</router-link>-->
       </div>
-      <div class="flex justify-center text-lg opacity-50 mt-20 mb-2.5"  :style="{ width: contentStyle.width }">
+      <div
+        class="flex justify-center text-lg opacity-50 mt-20 mb-2.5"
+        :style="{ width: contentStyle.width }"
+      >
         <div style="min-width: 190px">Speed: {{ speed }} WPM</div>
       </div>
-      <div v-update class="text-2xl mb-8  p-4 box-content flex flex-wrap max-w-[920px]">
+      <div v-update class="text-2xl mb-8 p-4 box-content flex flex-wrap max-w-[920px]">
         <span
-          v-for="(word, wordIndex) in sentences.split(' ')"
-          :key="word + wordIndex"
+          v-for="({word, key},wordIndex) in wordList"
+          :key="key"
           v-update-error-word
           :data-word="word"
         >
@@ -185,7 +205,6 @@ function randomOrder() {
         type="text"
         @input="checkInput"
       />
-
 
       <div
         class="flex justify-between text-lg opacity-70 infos mt-auto mb-5"
