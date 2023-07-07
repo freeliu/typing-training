@@ -6,18 +6,18 @@ import { useListStore } from '../stores/list.js'
 const store = useListStore()
 
 const sentences = ref<string>('')
-const wordList=computed(()=>{
+const wordList = computed(() => {
   return sentences.value.split(' ').map((word) => {
     return {
       word,
-      key:Symbol()
+      key: Symbol()
     }
   })
 })
 
-watch(wordList,(value)=>{
+watch(wordList, (value) => {
   console.log(value)
-} )
+})
 
 onMounted(() => {
   if (store.data) {
@@ -31,8 +31,9 @@ const config = {
   autoReset: true
 }
 
-const speed = ref(0)
-const errorCount = ref(0)
+const wordSpeed = ref(0)
+const characterSpeed = ref(0)
+const errorCharacters = ref(new Set<string>())
 
 const inputText = ref('')
 const isStarted = ref(false)
@@ -79,18 +80,23 @@ function checkInput(event: InputEvent) {
   endTime.value = new Date().getTime()
   // replace multiple spaces with single space
   inputText.value = inputText.value.replace(/\s\s+/g, ' ')
+  if(!inputText.value.includes(' ')) {
+    return
+  }
 
   // calculate speed
   const timeDiff = (endTime.value - startTime.value) / 1000
+
   const inputWordsCount = inputText.value.split(' ').length
-  speed.value = Math.round((inputWordsCount / timeDiff) * 60)
+  wordSpeed.value = Math.round((inputWordsCount / timeDiff) * 60)
+  characterSpeed.value = Math.round((inputText.value.replace(/\s\s+/g, '').length / timeDiff) * 60)
 
   // calculate error count
   for (let index = 0; index < sentences.value.length; index++) {
     let char = sentences.value[index]
     if (inputText.value[index] !== char && index < inputText.value.length) {
-      errorCount.value++
-      break
+      errorCharacters.value.add(char+index)
+      console.log([...errorCharacters.value])
     }
   }
 
@@ -119,8 +125,9 @@ let errorSet = new Set<string>()
 
 function reset() {
   inputText.value = ''
-  errorCount.value = 0
-  speed.value = 0
+  errorCharacters.value = new Set()
+  wordSpeed.value = 0
+  characterSpeed.value = 0
   textAreaElement.value.focus()
   errorSet = new Set<string>()
   isStarted.value = false
@@ -170,11 +177,17 @@ function randomOrder() {
         class="flex justify-center text-lg opacity-50 mt-20 mb-2.5"
         :style="{ width: contentStyle.width }"
       >
-        <div style="min-width: 190px">Speed: {{ speed }} WPM</div>
+        <div class="mr-4">
+          Speed: <span style="min-width: 33px">{{ wordSpeed }} </span> WPM
+        </div>
+        |
+        <div class="ml-4">
+          <span style="min-width: 33px">{{ characterSpeed }}</span> Characters
+        </div>
       </div>
       <div v-update class="text-2xl mb-8 p-4 box-content flex flex-wrap max-w-[920px]">
         <span
-          v-for="({word, key},wordIndex) in wordList"
+          v-for="({ word, key }, wordIndex) in wordList"
           :key="key"
           v-update-error-word
           :data-word="word"
@@ -211,7 +224,7 @@ function randomOrder() {
         class="flex justify-between text-lg opacity-70 infos mt-auto mb-5"
         :style="{ width: contentStyle.width }"
       >
-        <div>Error: {{ errorCount }}</div>
+        <div>Error: {{ errorCharacters.size }}</div>
 
         <div class="link" @click="reset">Retry</div>
         <div class="link" @click="retryErrorWords">Retry Error</div>
