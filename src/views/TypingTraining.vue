@@ -27,13 +27,8 @@ onMounted(() => {
   }
 })
 
-const config = {
-  autoReset: true
-}
-
 const wordSpeed = ref(0)
 const characterSpeed = ref(0)
-const errorCharacters = ref(new Set<string>())
 
 const inputText = ref('')
 const isStarted = ref(false)
@@ -80,7 +75,7 @@ function checkInput(event: InputEvent) {
   endTime.value = new Date().getTime()
   // replace multiple spaces with single space
   inputText.value = inputText.value.replace(/\s\s+/g, ' ')
-  if(!inputText.value.includes(' ')) {
+  if (!inputText.value.includes(' ')) {
     return
   }
 
@@ -90,22 +85,6 @@ function checkInput(event: InputEvent) {
   const inputWordsCount = inputText.value.split(' ').length
   wordSpeed.value = Math.round((inputWordsCount / timeDiff) * 60)
   characterSpeed.value = Math.round((inputText.value.replace(/\s\s+/g, '').length / timeDiff) * 60)
-
-  // calculate error count
-  for (let index = 0; index < sentences.value.length; index++) {
-    let char = sentences.value[index]
-    if (inputText.value[index] !== char && index < inputText.value.length) {
-      errorCharacters.value.add(char+index)
-      console.log([...errorCharacters.value])
-    }
-  }
-
-  // auto reset
-  if (config.autoReset && event.inputType === 'insertLineBreak') {
-    if (inputText.value.trim() === sentences.value.trim()) {
-      reset()
-    }
-  }
 }
 
 function readFile(event: Event) {
@@ -125,7 +104,6 @@ let errorSet = new Set<string>()
 
 function reset() {
   inputText.value = ''
-  errorCharacters.value = new Set()
   wordSpeed.value = 0
   characterSpeed.value = 0
   textAreaElement.value.focus()
@@ -133,10 +111,14 @@ function reset() {
   isStarted.value = false
 }
 
+const errorCharacters = ref(new Set())
+
 const vUpdateErrorWord: Directive = {
   updated(el: HTMLElement) {
-    if (el.querySelector('.incorrect')) {
+    const errorCharacter = el.querySelector('.incorrect')
+    if (errorCharacter) {
       errorSet.add(el.dataset?.word?.trim().replace(/\n/, '') as string)
+      errorCharacters.value.add(errorCharacter)
     }
   }
 }
