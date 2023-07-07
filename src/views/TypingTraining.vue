@@ -102,7 +102,7 @@ function checkInput(event: InputEvent) {
   }
 }
 
-function readJson(event: Event) {
+function readFile(event: Event) {
   const fileReader = new FileReader()
   fileReader.onload = onloadData
   //@ts-ignore
@@ -138,8 +138,9 @@ function retryErrorWords() {
   sentences.value = ''
   words.forEach((word) => {
     let str = String('').padEnd((word.length + 1) * 10 - 1, word + ' ')
-    sentences.value += str + '\n'
+    sentences.value += str + ' '
   })
+  console.log(sentences.value + ' ')
 
   reset()
 }
@@ -218,7 +219,7 @@ function randomOrder() {
         <a href="./demo-data.txt" class="link" download>Demo Data</a>
         <label class="link">
           Import data
-          <input class="opacity-0 w-0 h-0" type="file" @change="readJson" accept="text/plain" />
+          <input class="opacity-0 w-0 h-0" type="file" @change="readFile" accept="text/plain" />
         </label>
       </div>
     </div>
