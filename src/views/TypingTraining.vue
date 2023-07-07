@@ -106,6 +106,7 @@ function reset() {
   inputText.value = ''
   wordSpeed.value = 0
   characterSpeed.value = 0
+  errorCharacters.value=new Set()
   textAreaElement.value.focus()
   errorSet = new Set<string>()
   isStarted.value = false
