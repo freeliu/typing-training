@@ -184,7 +184,8 @@ function randomOrder() {
               incorrect:
                 inputText.split(' ')[wordIndex] &&
                 inputText.split(' ')[wordIndex][index] !== char &&
-                index < inputText.split(' ')[wordIndex].length
+                index < inputText.split(' ')[wordIndex].length ||
+                inputText.split(' ')[wordIndex]?.length > word.length
             }"
           >
             {{ char }}
