@@ -106,7 +106,7 @@ function reset() {
   inputText.value = ''
   wordSpeed.value = 0
   characterSpeed.value = 0
-  errorCharacters.value=new Set()
+  errorCharacters.value = new Set()
   textAreaElement.value.focus()
   errorSet = new Set<string>()
   isStarted.value = false
@@ -153,7 +153,7 @@ function randomOrder() {
   <div class="bg-gray-900 text-white min-h-screen">
     <div class="container mx-auto min-h-screen flex flex-col items-center">
       <div class="flex justify-end items-center w-full h-10 text-lg">
-        <router-link class="link" to="/set-data">set data</router-link>
+        <router-link tabindex="-1" class="link" to="/set-data">set data</router-link>
         <!--<router-link class="ml-4 link" to="/list">list</router-link>-->
       </div>
       <div
@@ -182,9 +182,9 @@ function randomOrder() {
               correct:
                 inputText.split(' ')[wordIndex] && inputText.split(' ')[wordIndex][index] === char,
               incorrect:
-                inputText.split(' ')[wordIndex] &&
-                inputText.split(' ')[wordIndex][index] !== char &&
-                index < inputText.split(' ')[wordIndex].length ||
+                (inputText.split(' ')[wordIndex] &&
+                  inputText.split(' ')[wordIndex][index] !== char &&
+                  index < inputText.split(' ')[wordIndex].length) ||
                 inputText.split(' ')[wordIndex]?.length > word.length
             }"
           >
@@ -213,7 +213,7 @@ function randomOrder() {
         <div class="link" @click="reset">Retry</div>
         <div class="link" @click="retryErrorWords">Retry Error</div>
         <div class="link" @click="randomOrder">Random Order</div>
-        <a href="./demo-data.txt" class="link" download>Demo Data</a>
+        <a tabindex="-2" href="./demo-data.txt" class="link" download>Demo Data</a>
         <label class="link">
           Import data
           <input class="opacity-0 w-0 h-0" type="file" @change="readFile" accept="text/plain" />
