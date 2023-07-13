@@ -1,10 +1,7 @@
-<script setup>
-// import TypingTraining from "./views/TypingTraining.vue";
-// import TypingTraining2 from './components/TypingTraining2.vue'
+<script setup lang="ts">
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <!--<TypingTraining></TypingTraining>-->
-  <router-view></router-view>
+  <RouterView />
 </template>
-

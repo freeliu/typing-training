@@ -8,14 +8,16 @@ interface Item {
 }
 
 export const useListStore = defineStore('list', {
-  state: () => ({ list: [] as Item[], data:'' }),
+  state: () => ({ list: [] as Item[], data: '' }),
   getters: {
     getItemById: (state) => {
-      return (id:number|string) => state.list.find((item) => item.id === id)
+      return (id: number | string) => state.list.find((item) => item.id === id)
     }
   },
   actions: {
-    setData(data:string){ this.data=data },
+    setData(data: string) {
+      this.data = data
+    },
     addItem(item: Item) {
       this.list.push(item)
     }
