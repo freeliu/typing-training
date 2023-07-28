@@ -4,6 +4,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useListStore } from '../stores/list.js'
 import DisplayContent from '@/components/DisplayContent.vue'
 import { useNow } from '@vueuse/core'
+import { handleChangLine } from '../assets/util'
 const now = useNow()
 
 const store = useListStore()
@@ -20,7 +21,7 @@ const wordList = computed(() => {
 
 onMounted(() => {
   if (store.data) {
-    sentences.value = store.data
+    sentences.value = handleChangLine(store.data)
   } else {
     sentences.value = `await break \n case catch class \n const continue debugger default \n delete do else true export false \n for if function let new null import return switch throw this try while`
   }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Directive } from 'vue/dist/vue.js'
+import {handleChangLine} from "@/assets/util.js";
 
 const emit = defineEmits<{
   update: [dom: HTMLElement]
@@ -12,13 +13,7 @@ const props = defineProps<{
 
 // vue以组件为单位patch，因为同级有 时间相关的dom更新，isCorrect会不断的执行
 function isCorrect(word: string, wordIndex: number, char: string, index: number) {
-  let text = props.inputText.trim()
-  // 忽略多个空格，换行前后的空格
-  text = text.replace(/ +/g, ' ')
-  text = text.replace(/ +\n/g, '\n')
-  text = text.replace(/\n +/g, '\n')
-  text = text.replace(/\n/g, ' \n ')
-
+  let text = handleChangLine(props.inputText)
   if (text.split(' ')[wordIndex] && text.split(' ')[wordIndex][index] === char) {
     return 'correct'
   }
