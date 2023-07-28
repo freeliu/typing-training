@@ -2,6 +2,9 @@
 import type { Directive } from 'vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useListStore } from '../stores/list.js'
+import { useNow } from '@vueuse/core'
+const now = useNow()
+
 
 const store = useListStore()
 
@@ -89,7 +92,6 @@ function checkInput(event: Event) {
 
 let errorSet = new Set<string>()
 
-
 const errorCharacters = ref(new Set())
 
 const vUpdateErrorWord: Directive = {
@@ -102,21 +104,42 @@ const vUpdateErrorWord: Directive = {
   }
 }
 
+function formatTime(ms:number) {
+  const seconds = Math.floor(ms / 1000)
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  const remainingSeconds = seconds % 60
+
+  const formattedHours = String(hours).padStart(2, '0')
+  const formattedMinutes = String(minutes).padStart(2, '0')
+  const formattedSeconds = String(remainingSeconds).padStart(2, '0')
+
+  return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`
+}
+
+const pastTime = computed(()=>{
+  if(startTime.value>0)
+  {
+    return formatTime(now.value.getTime()-startTime.value)
+  }else {
+    return formatTime(0)
+  }
+})
 
 </script>
 
 <template>
-  <div class="bg-gray-900 text-white min-h-screen">
+  <div class="bg-gray-900 text-gray-500 min-h-screen">
     <div class="flex justify-between items-center px-4 py-2 bg-gray-800">
-      <h1 class="text-xl font-bold">Typing Test</h1>
-      <p>
+      <h1 class=" ">Time <span class="mx-2.5">{{ pastTime }}</span> Total Words {{wordList.length}}</h1>
+      <div>
         <span style="min-width: 33px">{{ wordSpeed }} </span> WPM
         <span style="min-width: 33px">{{ characterSpeed }}</span> Characters
-      </p>
+      </div>
     </div>
 
     <div class="mx-auto flex gap-1 mt-5 px-4">
-      <div v-update class="flex-1 text-base mb-8 py-4 box-content flex flex-wrap">
+      <div v-update class="flex-1 text-2xl mb-8 py-4 box-content flex flex-wrap">
         <span
           v-for="({ word, key }, wordIndex) in wordList"
           :key="key"
@@ -147,7 +170,7 @@ const vUpdateErrorWord: Directive = {
         :style="contentStyle"
         ref="textAreaElement"
         autofocus
-        class="bg-gray-800 flex-1 text-white text-base p-4 rounded overflow-clip outline-0"
+        class="bg-gray-800 flex-1  text-2xl p-4 rounded overflow-clip outline-0"
         type="text"
         @input="checkInput"
       />
@@ -155,16 +178,3 @@ const vUpdateErrorWord: Directive = {
   </div>
 </template>
 
-<style scoped>
-.link {
-  @apply cursor-pointer hover:text-sky-500;
-}
-
-.correct {
-  color: #10b981;
-}
-
-.incorrect {
-  color: #ef4444;
-}
-</style>

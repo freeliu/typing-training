@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.link {
+    @apply cursor-pointer hover:text-sky-500;
+}
+
+.correct {
+    @apply text-cyan-600
+}
+
+.incorrect {
+    color: #ef4444;
+}

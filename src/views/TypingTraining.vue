@@ -223,16 +223,3 @@ function randomOrder() {
   </div>
 </template>
 
-<style scoped>
-.link {
-  @apply cursor-pointer hover:text-sky-500;
-}
-
-.correct {
-  color: #10b981;
-}
-
-.incorrect {
-  color: #ef4444;
-}
-</style>
