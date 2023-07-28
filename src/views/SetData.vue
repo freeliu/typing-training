@@ -9,7 +9,7 @@ const title = ref('')
 const description = ref('')
 
 function submit() {
-  store.setData(description.value.replace(/\s\s+|\n|\r\n/g, ' '))
+  store.setData(description.value.replace(/\s\s+/g, ' '))
   router.push({ path: '/' })
 }
 </script>

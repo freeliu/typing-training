@@ -2,9 +2,9 @@
 import type { Directive } from 'vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useListStore } from '../stores/list.js'
+import DisplayContent from '@/components/DisplayContent.vue'
 import { useNow } from '@vueuse/core'
 const now = useNow()
-
 
 const store = useListStore()
 
@@ -18,15 +18,11 @@ const wordList = computed(() => {
   })
 })
 
-watch(wordList, (value) => {
-  console.log(value)
-})
-
 onMounted(() => {
   if (store.data) {
     sentences.value = store.data
   } else {
-    sentences.value = `await break case catch class const continue debugger default delete do else true export false for if function let new null import return switch throw this try while`
+    sentences.value = `await break \n case catch class \n const continue debugger default \n delete do else true export false \n for if function let new null import return switch throw this try while`
   }
 })
 
@@ -40,34 +36,6 @@ const endTime = ref(0)
 
 const textAreaElement = ref()
 
-const vUpdate: Directive = {
-  // todo ? 输入框？
-  updated(el: HTMLElement) {
-    let { clientWidth, clientHeight } = el
-    if (clientWidth > 200) {
-      clientWidth = Math.max(clientWidth, 400)
-      clientWidth = Math.min(clientWidth, 1000)
-      contentStyle.value.width = clientWidth + 'px'
-    }
-    if (clientHeight > 64) {
-      contentStyle.value.height = clientHeight + 'px'
-    }
-  },
-  mounted(el: HTMLElement) {
-    let { clientWidth, clientHeight } = el
-    if (clientWidth > 200) {
-      clientWidth = Math.max(clientWidth, 400)
-      clientWidth = Math.min(clientWidth, 1000)
-      contentStyle.value.width = clientWidth + 'px'
-    }
-    if (clientHeight > 64) {
-      contentStyle.value.height = clientHeight + 'px'
-    }
-  }
-}
-
-const contentStyle = ref({ width: '800px', height: '64px' })
-
 watch(isStarted, (value, oldValue) => {
   if (value && !oldValue) {
     startTime.value = new Date().getTime()
@@ -77,7 +45,7 @@ watch(isStarted, (value, oldValue) => {
 function checkInput(event: Event) {
   endTime.value = new Date().getTime()
   // replace multiple spaces with single space
-  inputText.value = inputText.value.replace(/\s\s+/g, ' ')
+  // inputText.value = inputText.value.replace(/\s\s+/g, ' ')
   if (!inputText.value.includes(' ')) {
     return
   }
@@ -94,17 +62,15 @@ let errorSet = new Set<string>()
 
 const errorCharacters = ref(new Set())
 
-const vUpdateErrorWord: Directive = {
-  updated(el: HTMLElement) {
-    const errorCharacter = el.querySelector('.incorrect')
-    if (errorCharacter) {
-      errorSet.add(el.dataset?.word?.trim().replace(/\n/, '') as string)
-      errorCharacters.value.add(errorCharacter)
-    }
+function vUpdateErrorWord(el: HTMLElement) {
+  const errorCharacter = el.querySelector('.incorrect')
+  if (errorCharacter) {
+    errorSet.add(el.dataset?.word?.trim().replace(/\n/, '') as string)
+    errorCharacters.value.add(errorCharacter)
   }
 }
 
-function formatTime(ms:number) {
+function formatTime(ms: number) {
   const seconds = Math.floor(ms / 1000)
   const hours = Math.floor(seconds / 3600)
   const minutes = Math.floor((seconds % 3600) / 60)
@@ -117,21 +83,21 @@ function formatTime(ms:number) {
   return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`
 }
 
-const pastTime = computed(()=>{
-  if(startTime.value>0)
-  {
-    return formatTime(now.value.getTime()-startTime.value)
-  }else {
+const pastTime = computed(() => {
+  if (startTime.value > 0) {
+    return formatTime(now.value.getTime() - startTime.value)
+  } else {
     return formatTime(0)
   }
 })
-
 </script>
 
 <template>
   <div class="bg-gray-900 text-gray-500 min-h-screen">
     <div class="flex justify-between items-center px-4 py-2 bg-gray-800">
-      <h1 class=" ">Time <span class="mx-2.5">{{ pastTime }}</span> Total Words {{wordList.length}}</h1>
+      <h1>
+        Time <span class="mx-2.5">{{ pastTime }}</span> Total Words {{ wordList.length }}
+      </h1>
       <div>
         <span style="min-width: 33px">{{ wordSpeed }} </span> WPM
         <span style="min-width: 33px">{{ characterSpeed }}</span> Characters
@@ -139,42 +105,18 @@ const pastTime = computed(()=>{
     </div>
 
     <div class="mx-auto flex gap-1 mt-5 px-4">
-      <div v-update class="flex-1 text-2xl mb-8 py-4 box-content flex flex-wrap">
-        <span
-          v-for="({ word, key }, wordIndex) in wordList"
-          :key="key"
-          v-update-error-word
-          :data-word="word"
-        >
-          <span
-            v-for="(char, index) in word.split('')"
-            :key="index"
-            :class="{
-              correct:
-                inputText.split(' ')[wordIndex] && inputText.split(' ')[wordIndex][index] === char,
-              incorrect:
-                (inputText.split(' ')[wordIndex] &&
-                  inputText.split(' ')[wordIndex][index] !== char &&
-                  index < inputText.split(' ')[wordIndex].length) ||
-                inputText.split(' ')[wordIndex]?.length > word.length
-            }"
-          >
-            {{ char }}
-          </span>
-          <span>&nbsp;</span>
-        </span>
+      <div class="w-1/2 text-2xl mb-8 py-4 box-content">
+        <DisplayContent :input-text="inputText" :word-list="wordList" @update="vUpdateErrorWord" />
       </div>
       <textarea
         v-model="inputText"
         @keydown="isStarted = true"
-        :style="contentStyle"
         ref="textAreaElement"
         autofocus
-        class="bg-gray-800 flex-1  text-2xl p-4 rounded overflow-clip outline-0"
+        class="bg-gray-800 w-1/2 text-2xl p-4 rounded overflow-clip outline-0"
         type="text"
         @input="checkInput"
       />
     </div>
   </div>
 </template>
-
