@@ -153,7 +153,7 @@ function randomOrder() {
   <div class="bg-gray-900 text-white min-h-screen">
     <div class="container mx-auto min-h-screen flex flex-col items-center">
       <div class="flex justify-end items-center w-full h-10 text-lg">
-        <router-link tabindex="-1" class="link" to="/set-data">set data</router-link>
+        <router-link tabindex="-1" class="link" to="/set">set data</router-link>
         <!--<router-link class="ml-4 link" to="/list">list</router-link>-->
       </div>
       <div
