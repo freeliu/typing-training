@@ -1,25 +1,34 @@
-import { ref, computed } from 'vue'
+import { ref, computed, toValue } from 'vue'
+import type { Ref } from 'vue'
 import { defineStore } from 'pinia'
+import type { Item } from '@/types/store'
+import { useStorage } from '@vueuse/core'
+import { uuid } from '@/assets/util'
 
-interface Item {
-  id?: number | string
-  title: string
-  desc: string
-}
+export const useListStore = defineStore('list', () => {
+  const list = useStorage('type-training-item', [] as Item[])
+  const getItemById = computed(() => {
+    return (id: string) => list.value.find((item) => item.id === id)
+  })
+  function addItem(item: Item) {
+    item = toValue(item)
+    if (!item.id) {
+      item.id = uuid()
+    }
+    list.value.push(item)
+  }
+  function setItem(item: Item) {
+    item = toValue(item)
+    const lsItem = list.value.find((itm) => itm.id === item.id)
+    if (lsItem) {
+      Object.assign(lsItem, item)
+    }
+  }
 
-export const useListStore = defineStore('list', {
-  state: () => ({ list: [] as Item[], data: '' }),
-  getters: {
-    getItemById: (state) => {
-      return (id: number | string) => state.list.find((item) => item.id === id)
-    }
-  },
-  actions: {
-    setData(data: string) {
-      this.data = data
-    },
-    addItem(item: Item) {
-      this.list.push(item)
-    }
+  return {
+    list,
+    getItemById,
+    addItem,
+    setItem
   }
 })
