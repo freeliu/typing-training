@@ -5,8 +5,8 @@ import TypingTraining from '../views/TypingTraining.vue'
 import SetData from '../views/SetData.vue'
 
 const routes: RouteRecordRaw[] = [
-  { path: '/', component: LargeContent },
-  { path: '/1', component: TypingTraining },
+  { path: '/', component: TypingTraining },
+  { path: '/test', component: LargeContent },
   { path: '/set', component: SetData },
   { path: '/set/:id', component: SetData }
 ]

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, watch, watchEffect } from 'vue'
+import { computed, reactive, ref, watch, watchEffect } from 'vue'
 import type { FormInstance, FormItemRule, FormRules } from 'element-plus'
 import { useListStore } from '@/stores/list'
 import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
@@ -14,7 +14,7 @@ const rules = reactive<FormRules<Item>>({
   title: [{ required: true, message: 'please input title' }],
   content: [{ required: true, message: 'please input title' }]
 })
-const id = ref(route.params.id as string)
+const id = ref<string>(route.params.id as string)
 
 function initFormModel() {
   if (id.value) {
@@ -26,15 +26,12 @@ function initFormModel() {
 
 initFormModel()
 //从其它页面，浏览器返回按钮不触发 所以需要initFormModel()
-/*watch(route, () => {
+watch(route, () => {
+  id.value = route.params.id as string
   initFormModel()
   console.log('route change')
-})*/
-onBeforeRouteUpdate((to) => {
-  id.value = to.params.id
-  initFormModel()
-  console.log('onBeforeRouteUpdate')
 })
+onBeforeRouteUpdate((to) => {})
 
 function submit() {
   if (formModel.value.id) {
@@ -42,7 +39,7 @@ function submit() {
   } else {
     store.addItem(formModel.value)
   }
-  router.push({ path: '/', query: { id: id.value } })
+  router.push({ path: '/test', query: { id: id.value } })
 }
 
 const submitForm = async (formEl: FormInstance | undefined) => {
@@ -61,12 +58,14 @@ const resetForm = (formEl: FormInstance | undefined) => {
   formEl.resetFields()
 }
 
-const menuActiveIndex = ref('')
+const menuActiveIndex = computed(() => {
+  return formModel.value.id || ''
+})
 </script>
 <template>
-  <el-container>
+  <el-container :key="id || 'key'">
     <el-aside>
-      <el-menu class="min-h-screen" :default-active="menuActiveIndex">
+      <el-menu class="min-h-screen" :default-active="menuActiveIndex" router>
         <el-menu-item
           @click="router.push('/set/' + item.id)"
           v-for="item in store.list.filter((item) => item.title)"
@@ -79,7 +78,7 @@ const menuActiveIndex = ref('')
     </el-aside>
     <el-main>
       <!--key useFor resetForm dynamic route-->
-      <el-form class="max-w-2xl mx-auto" :key="id" :model="formModel" :rules="rules" ref="formEl">
+      <el-form class="max-w-2xl mx-auto" :model="formModel" :rules="rules" ref="formEl">
         <el-form-item prop="title">
           <el-input v-model="formModel.title"></el-input>
         </el-form-item>
