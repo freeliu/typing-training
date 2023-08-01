@@ -71,7 +71,7 @@ watch(isStarted, (value, oldValue) => {
   }
 })
 
-function checkInput(event: InputEvent) {
+function checkInput(event: Event) {
   endTime.value = new Date().getTime()
   // replace multiple spaces with single space
   inputText.value = inputText.value.replace(/\s\s+/g, ' ')

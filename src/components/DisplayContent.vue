@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Directive } from 'vue/dist/vue.js'
 import {handleChangLine} from "@/assets/util.js";
+import type {Directive} from "vue";
 
 const emit = defineEmits<{
   update: [dom: HTMLElement]
