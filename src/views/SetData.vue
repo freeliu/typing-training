@@ -36,10 +36,11 @@ onBeforeRouteUpdate((to) => {})
 function submit() {
   if (formModel.value.id) {
     store.setItem(formModel.value)
+    router.push({ path: '/test', query: { id: id.value } })
   } else {
-    store.addItem(formModel.value)
+    let nid = store.addItem(formModel.value)
+    router.push({ path: '/test', query: { id: nid } })
   }
-  router.push({ path: '/test', query: { id: id.value } })
 }
 
 const submitForm = async (formEl: FormInstance | undefined) => {

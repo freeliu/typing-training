@@ -16,6 +16,7 @@ export const useListStore = defineStore('list', () => {
       item.id = uuid()
     }
     list.value.push(item)
+    return item.id
   }
   function setItem(item: Item) {
     item = toValue(item)
