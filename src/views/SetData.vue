@@ -34,12 +34,13 @@ watch(route, () => {
 onBeforeRouteUpdate((to) => {})
 
 function submit() {
+  console.log(formModel.value)
   if (formModel.value.id) {
     store.setItem(formModel.value)
-    router.push({ path: '/test', query: { id: id.value } })
+    router.push({ path: '/test/' + id.value })
   } else {
     let nid = store.addItem(formModel.value)
-    router.push({ path: '/test', query: { id: nid } })
+    router.push({ path: '/test/' + nid })
   }
 }
 
@@ -69,6 +70,7 @@ const menuActiveIndex = computed(() => {
       <el-menu class="min-h-screen" :default-active="menuActiveIndex" router>
         <el-menu-item
           @click="router.push('/set/' + item.id)"
+          @dblclick="router.push('/test/' + item.id)"
           v-for="item in store.list.filter((item) => item.title)"
           :key="item.id"
           :index="item.id"

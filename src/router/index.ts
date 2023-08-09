@@ -7,6 +7,7 @@ import SetData from '../views/SetData.vue'
 const routes: RouteRecordRaw[] = [
   { path: '/', component: TypingTraining },
   { path: '/test', component: LargeContent },
+  { path: '/test/:id', component: LargeContent },
   { path: '/set', component: SetData },
   { path: '/set/:id', component: SetData }
 ]

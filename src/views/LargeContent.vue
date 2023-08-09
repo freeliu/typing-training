@@ -1,13 +1,12 @@
 <script lang="ts" setup>
-import type { Directive } from 'vue'
-import { computed, onMounted, ref, watch } from 'vue'
-import { useListStore } from '@/stores/list'
+import {computed, onMounted, ref, watch} from 'vue'
+import {useListStore} from '@/stores/list'
 import DisplayContent from '@/components/DisplayContent.vue'
-import { useNow } from '@vueuse/core'
-import { handleChangLine } from '@/assets/util'
-import router from "@/router";
-import {useRoute} from "vue-router";
-const route=useRoute()
+import {useNow} from '@vueuse/core'
+import {useRoute} from 'vue-router'
+import {handleChangLine} from "@/assets/util";
+
+const route = useRoute()
 const now = useNow()
 
 const store = useListStore()
@@ -23,10 +22,12 @@ const wordList = computed(() => {
 })
 
 onMounted(() => {
-  const id=route.query.id
-  console.log(id)
+  const id = route.params.id as string
   if (id) {
-    sentences.value = handleChangLine(store.getItemById(id).content)
+    let item = store.getItemById(id)
+    if (item) {
+      sentences.value = handleChangLine(item.content)
+    }
   } else {
     sentences.value = `await break \n case catch class \n const continue debugger default \n delete do else true export false \n for if function let new null import return switch throw this try while`
   }
