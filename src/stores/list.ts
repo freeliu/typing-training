@@ -25,11 +25,15 @@ export const useListStore = defineStore('list', () => {
       Object.assign(lsItem, item)
     }
   }
+  function delItem(id: string) {
+    list.value = list.value.filter((item) => item.id !== id)
+  }
 
   return {
     list,
     getItemById,
     addItem,
-    setItem
+    setItem,
+    delItem
   }
 })
